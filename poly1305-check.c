@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "gmp.h"
 #include "utils.h"
 
 
@@ -7,31 +12,39 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    char *inputKey = argv[1];
-    char *inputTag = argv[3];
-    const char *filename = argv[2];
+    char const *inputKey = argv[1];
+    char const *inputTag = argv[3];
+    char const *filename = argv[2];
 
     // Verify the length of the Key
-    if ((int)strlen(inputKey) != 64){
-        fprintf(stderr,"The Key must be 64 characters long. Current Key has length %d\n", (int)strlen(inputKey));
+    size_t keyLength = strlen(inputKey);
+    if (keyLength != 64) {
+        fprintf(stderr, "The Key must be 64 characters long. Current Key has length %zu\n", keyLength);
         return 1;
     }
 
     // Verify the length of the Tag
-    if ((int)strlen(inputTag) != 32){
-        fprintf(stderr,"The Tag must be 32 characters long. Current Tag has length %d\n", (int)strlen(inputTag));
+    size_t tagLength = strlen(inputTag);
+    if (tagLength != 32) {
+        fprintf(stderr, "The Tag must be 32 characters long. Current Tag has length %zu\n", tagLength);
         return 1;
     }
 
     mpz_t given, computed;
+    mpz_inits(given, computed, NULL);
     unsigned char given_byte_tag[16];
     unsigned char computed_byte_tag[16];
+
+    for (int i=0; i<16; ++i){
+        given_byte_tag[i] = 0;
+        computed_byte_tag[i] = 0;
+    }
 
     // Get input tag and convert it to mpz_t
     getTag(inputTag, given_byte_tag);
     leBytesToNum(given_byte_tag, 16, given);
 
-    // Compute real tag using Poly1305 and convert the string result to a mpz_t
+    // Compute real tag using Poly1305 and convert the resulting string to mpz_t
     char *computed_tag = Poly1305(inputKey, filename);
     getTag(computed_tag, computed_byte_tag);
     leBytesToNum(computed_byte_tag, 16, computed);
@@ -40,10 +53,11 @@ int main(int argc, char *argv[]){
     // gmp_printf("computed = %Zx\n", computed);
 
     // Compare both mpz_t
-    if(!mpz_cmp(given, computed))
+    if(mpz_cmp(given, computed) == 0)
         printf("ACCEPT\n");
     else
         printf("REJECT\n");
-
+    mpz_clears(given, computed, NULL);
+    free(computed_tag);
     return 0;
 }

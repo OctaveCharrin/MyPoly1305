@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "gmp.h"
 #include "utils.h"
 
 
@@ -7,17 +12,19 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    char *inputKey = argv[1];
-    const char *filename = argv[2];
+    char const *inputKey = argv[1];
+    char const *filename = argv[2];
 
     // Verify the length of the key
-    if ((int)strlen(inputKey) !=64){
-        fprintf(stderr,"The Key must be 64 characters long. Current Key has length %d\n", (int)strlen(inputKey));
+    size_t keyLength = strlen(inputKey);
+    if (keyLength != 64) {
+        fprintf(stderr, "The Key must be 64 characters long. Current Key has length %zu\n", keyLength);
         return 1;
     }
 
     char *tag = Poly1305(inputKey, filename);
     printf("%s\n", tag);
 
+    free(tag);
     return 0;
 }
