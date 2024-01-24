@@ -53,8 +53,12 @@ The output shoulb be:
 ```bash
 ACCEPT
 ```
-
 You can replace "msg.txt" with your prefered file name.
+
+To clean the folder run
+```bash
+make clean
+```
 
 ### Author
 Octave Charrin
