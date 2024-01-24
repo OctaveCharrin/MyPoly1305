@@ -49,7 +49,7 @@ For example
 ```bash
 ./poly1305-gen 85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b msg.txt a8061dc1305136c6c22b8baf0c0127a9
 ```
-The output tag shoulb be:
+The output shoulb be:
 ```bash
 ACCEPT
 ```
